@@ -111,26 +111,31 @@ public class MainActivity extends AppCompatActivity {
         RequestBody desc = RequestBody.create(MultipartBody.FORM, editText.getText().toString());
         File file = new File(imageUri.getPath());
 
-        RequestBody filePart = RequestBody.create(
-                MediaType.parse(getContentResolver().getType(imageUri)),
-                file
-        );
-        MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("photo", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
+//        RequestBody filePart = RequestBody.create(
+//                MediaType.parse(getContentResolver().getType(imageUri)),
+//                file
+//        );
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), file);
+        MultipartBody.Part parts = MultipartBody.Part.createFormData("photo", file.getName(), requestBody);
+
+
+//        MultipartBody.Part filePart1 = MultipartBody.Part.createFormData("photo", file.getName(), RequestBody.create(MediaType.parse("image/*"), file));
 
 //
 //        MultipartBody.Part multipartBody = MultipartBody.Part.createFormData("photo",
 //                file.getName(), filePart);
         calls = RetrofitClient.getInstance().getApi();
-        calls.upload(desc, filePart1)
+        calls.upload(desc, parts)
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         Log.d(TAG, "onResponse:  uploade");
+                        Toast.makeText(MainActivity.this, "Upload successfully", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                        Toast.makeText(MainActivity.this, "error in uploading image "+t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "onFailure: " + t.getMessage());
                     }
                 });
